@@ -24,7 +24,7 @@ const unsigned long print_interval = 100;
 const int TARGET_BIN = round(TARGET_FREQ / (SAMPLING_FREQ / SAMPLES)); 
 
 // Soglia di Magnitudine: Regola questo valore per la tua taratura
-const int THRESHOLD_MAGNITUDE = 1000; 
+const int THRESHOLD_MAGNITUDE = 40000; 
 
 // --- Buffer e Oggetti FFT ---
 double vReal[SAMPLES];
