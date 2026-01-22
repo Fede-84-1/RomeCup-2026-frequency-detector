@@ -412,5 +412,3 @@ if (daly_rotate == true && time_number_light <= millis()){
   Serial.println("");
 }
 
-
-
