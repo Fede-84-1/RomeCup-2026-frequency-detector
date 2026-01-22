@@ -1,4 +1,4 @@
-#include <ArduinoFFT.h>
+#include <arduinoFFT.h>
 #include <driver/i2s.h>
 
 // --- Configurazione Timer per Stampa Seriale ---
@@ -31,7 +31,7 @@ double vReal[SAMPLES];
 double vImag[SAMPLES];
 ArduinoFFT<double> FFT;
 
-// Funzione per inizializzare l'I2S
+/* Funzione per inizializzare l'I2S
 void i2s_install() {
   const i2s_config_t i2s_config = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX), // Master e Ricezione
@@ -44,7 +44,7 @@ void i2s_install() {
     .dma_buf_len = 64,
     .use_apll = false 
   };
-
+*/
   // ⚠️ CORREZIONE ORDINE CAMPI: data_out_num deve precedere data_in_num
   const i2s_pin_config_t pin_config = {
     .bck_io_num = I2S_BCK_PIN,
@@ -100,6 +100,7 @@ void loop() {
   FFT.complexToMagnitude(vReal, vImag, SAMPLES); 
 
   // 3. Analisi e Stampa (Controllata dal Timer)
+  bool sound_reveal (TARGET_BIN, SAMPLES, TARGET_BIN)
   if (TARGET_BIN < SAMPLES / 2) {
     double target_magnitude = vReal[TARGET_BIN]; 
 
@@ -111,6 +112,7 @@ void loop() {
         if (target_magnitude > THRESHOLD_MAGNITUDE) {
           // Stampa quando il suono è RILEVATO
           Serial.printf("[!!! RILEVATO !!!] Suono a 4000 Hz. Magnitudine: %.0f\n", target_magnitude);
+
         } else {
           // Stampa quando il suono è ASSENTE
           Serial.printf("In attesa... (Magnitudine rilevata: %.0f)\n", target_magnitude);
