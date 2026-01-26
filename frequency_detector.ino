@@ -21,7 +21,7 @@ const unsigned long print_interval = 100;
 #define TARGET_FREQ   4000.0 // Frequenza da rilevare
 
 // da scrivere ancora commento
-double target_magnitude
+double target_magnitude;
 
 // Calcolo del Bin FFT per 4000 Hz (Bin = Freq_target / (Fs / N))
 const int TARGET_BIN = round(TARGET_FREQ / (SAMPLING_FREQ / SAMPLES)); 
@@ -90,22 +90,12 @@ void setup() {
   Serial.println("------------------------------------");
 }
 
-bool sound_reveal (TARGET_BIN, SAMPLES, last_print_time, target_magnitude, print_interval, THRESHOLD_MAGNITUDE){
+bool sound_reveal() {
   if (TARGET_BIN < SAMPLES / 2) {
-    target_magnitude = vReal[TARGET_BIN]; 
-
-    // Esegui la stampa solo se è trascorso l'intervallo specificato (100ms)
-    if (millis() - last_print_time >= print_interval) {
-        
-        last_print_time = millis(); // Aggiorna il timer
-
-        if (target_magnitude > THRESHOLD_MAGNITUDE) {
-          return true;
-        } else {
-          return false;
-        }
-    }
+    target_magnitude = vReal[TARGET_BIN];
+    return (target_magnitude > THRESHOLD_MAGNITUDE);
   }
+  return false;
 }
 
 void loop() {
