@@ -1,4 +1,5 @@
 #include "Adafruit_VL53L0X.h"
+#include "frequency_detector.ino"
 
 // address we will assign if dual sensor is present
 #define LOX1_ADDRESS 0x30
@@ -229,7 +230,7 @@ void moveForward(){
 bool checkLight(){
   bool light_sensor_1 = digitalRead(LIGHT_SENSOR_1);
   bool light_sensor_2 = digitalRead(LIGHT_SENSOR_2);
-  return light_sensor_1 || light_sensor_2;
+  return light_sensor_1 || light_sensor_2 || sound_reveal();
 }
 
 bool checkFrontObstacle(){
