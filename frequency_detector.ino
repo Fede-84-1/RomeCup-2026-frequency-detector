@@ -90,7 +90,7 @@ void setup() {
   Serial.println("------------------------------------");
 }
 
-bool sound_reveal (TARGET_BIN, SAMPLES, last_print_time, target_magnitude, THRESHOLD_MAGNITUDE){
+bool sound_reveal (TARGET_BIN, SAMPLES, last_print_time, target_magnitude, print_interval, THRESHOLD_MAGNITUDE){
   if (TARGET_BIN < SAMPLES / 2) {
     target_magnitude = vReal[TARGET_BIN]; 
 
@@ -100,12 +100,9 @@ bool sound_reveal (TARGET_BIN, SAMPLES, last_print_time, target_magnitude, THRES
         last_print_time = millis(); // Aggiorna il timer
 
         if (target_magnitude > THRESHOLD_MAGNITUDE) {
-          // Stampa quando il suono è RILEVATO
-          Serial.printf("[!!! RILEVATO !!!] Suono a 4000 Hz. Magnitudine: %.0f\n", target_magnitude);
-
+          return true;
         } else {
-          // Stampa quando il suono è ASSENTE
-          Serial.printf("In attesa... (Magnitudine rilevata: %.0f)\n", target_magnitude);
+          return false;
         }
     }
   }
