@@ -1,5 +1,4 @@
 #include "Adafruit_VL53L0X.h"
-#include "frequency_detector.ino"
 
 // address we will assign if dual sensor is present
 #define LOX1_ADDRESS 0x30
@@ -75,6 +74,9 @@ Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
 // this holds the measurement
 VL53L0X_RangingMeasurementData_t measure1;
 VL53L0X_RangingMeasurementData_t measure2;
+
+//suono
+const int ricezioneSegnaleSuono = 11;
 
 /*
     Reset all sensors by setting all of their XSHUT pins low for delay(10), then set all XSHUT high to bring out of reset
@@ -158,6 +160,8 @@ void setup() {
   pinMode( TRIGGER_PORT, OUTPUT );
   pinMode( ECHO_PORT, INPUT );
 
+  pinMode( ricezioneSegnaleSuono, INPUT );
+
   Serial.println(F("Shutdown pins inited..."));
 
   digitalWrite(SHT_LOX1, LOW);
@@ -230,7 +234,8 @@ void moveForward(){
 bool checkLight(){
   bool light_sensor_1 = digitalRead(LIGHT_SENSOR_1);
   bool light_sensor_2 = digitalRead(LIGHT_SENSOR_2);
-  return light_sensor_1 || light_sensor_2 || sound_reveal();
+  bool sound_sensor = digitalRead(ricezioneSegnaleSuono);
+  return light_sensor_1 || light_sensor_2 || sound_sensor;
 }
 
 bool checkFrontObstacle(){
@@ -412,4 +417,3 @@ if (daly_rotate == true && time_number_light <= millis()){
   //}
   Serial.println("");
 }
-
