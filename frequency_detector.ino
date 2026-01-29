@@ -1,11 +1,6 @@
 #include <arduinoFFT.h>
 #include <driver/i2s.h>
 
-// --- Configurazione Timer per Stampa Seriale ---
-unsigned long last_print_time = 0;
-// Stampa lo stato ogni 100 millisecondi per un feedback costante
-const unsigned long print_interval = 100; 
-
 // --- Parametri I2S e Pinout (Verifica che questi pin corrispondano al tuo cablaggio) ---
 #define I2S_BCK_PIN   21  // Serial Clock (BCLK)
 #define I2S_WS_PIN    22  // Word Select (LRCLK)
@@ -22,6 +17,9 @@ const unsigned long print_interval = 100;
 
 // da scrivere ancora commento
 double target_magnitude;
+
+//DA VEDERE POI CHE NUMERO METTERE
+const int invioSegnale = 4;
 
 // Calcolo del Bin FFT per 4000 Hz (Bin = Freq_target / (Fs / N))
 const int TARGET_BIN = round(TARGET_FREQ / (SAMPLING_FREQ / SAMPLES)); 
@@ -81,6 +79,7 @@ void i2s_read_samples(double *samples_buffer, size_t num_samples) {
 
 void setup() {
   Serial.begin(115200);
+  pinMode(invioSegnale, OUTPUT); 
   delay(1000);
   Serial.println("\n--- Avvio Rilevamento 4000 Hz con FFT ---");
   i2s_install();
@@ -110,24 +109,21 @@ void loop() {
   FFT.compute(vReal, vImag, SAMPLES, FFT_FORWARD);
   FFT.complexToMagnitude(vReal, vImag, SAMPLES); 
 
+  int
   // 3. Analisi e Stampa (Controllata dal Timer)
   if (TARGET_BIN < SAMPLES / 2) {
     target_magnitude = vReal[TARGET_BIN]; 
 
     // Esegui la stampa solo se è trascorso l'intervallo specificato (100ms)
-    if (millis() - last_print_time >= print_interval) {
-        
-        last_print_time = millis(); // Aggiorna il timer
-
-        if (target_magnitude > THRESHOLD_MAGNITUDE) {
-          // Stampa quando il suono è RILEVATO
-          Serial.printf("[!!! RILEVATO !!!] Suono a 4000 Hz. Magnitudine: %.0f\n", target_magnitude);
-
-        } else {
-          // Stampa quando il suono è ASSENTE
-          Serial.printf("In attesa... (Magnitudine rilevata: %.0f)\n", target_magnitude);
-        }
-    }
+    if (TARGET_BIN < SAMPLES / 2) {
+    target_magnitude = vReal[TARGET_BIN];
+    if (target_magnitude > THRESHOLD_MAGNITUDE)
+      {
+        digitalWrite(invioSegnale, HIGH);
+        delay 2500;
+      }
+  } 
+  digitalWrite(invioSegnale, LOW);
     
     // NOTA: Se devi fare un'azione veloce (es. accendere un LED), 
     // falla qui, fuori dal blocco del timer 'if', per la massima reattività!
