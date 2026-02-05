@@ -10,7 +10,7 @@
 
 int number_lights_seen = 0;
 
-int number_light_1 = 2;// da modificare quando inizia la gara
+int number_light_1 = 100;// da modificare quando inizia la gara
 int number_light_2 = 100;
 int number_light_3 = 100;
 int number_light_4 = 100;
@@ -231,7 +231,7 @@ void moveForward(){
   Serial.println("");
 }
 
-bool checkLight(){
+bool checkLightAndSound(){
   bool light_sensor_1 = digitalRead(LIGHT_SENSOR_1);
   bool light_sensor_2 = digitalRead(LIGHT_SENSOR_2);
   bool sound_sensor = digitalRead(ricezioneSegnaleSuono);
@@ -393,7 +393,7 @@ if (daly_rotate == true && time_number_light <= millis()){
     if (d.front<80) {
       emergencyFlagRotation = true;
     }
-    if(checkLight() && (millis()-lastTimeLightFound>IGNORE_TIME_AFTER_LIGHT_FOUND || first_light_not_found)){
+    if(checkLightAndSound() && (millis()-lastTimeLightFound>IGNORE_TIME_AFTER_LIGHT_FOUND || first_light_not_found)){
       first_light_not_found = false;
       stopMotors(); // Ferma il robot
       greenLedThreeSecondsBlocking(); // Accendi verde per 3 secondi 
