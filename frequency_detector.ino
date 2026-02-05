@@ -1,6 +1,14 @@
 #include <arduinoFFT.h>
 #include <driver/i2s.h>
 
+// Soglia di Magnitudine, da regolare il giorno della gara
+const int THRESHOLD_MAGNITUDE = 40000; 
+
+// --- Configurazione Timer per Stampa Seriale ---
+unsigned long last_print_time = 0;
+// Stampa lo stato ogni 100 millisecondi per un feedback costante
+const unsigned long print_interval = 100; 
+
 // --- Parametri I2S e Pinout (Verifica che questi pin corrispondano al tuo cablaggio) ---
 #define I2S_BCK_PIN   21  // Serial Clock (BCLK)
 #define I2S_WS_PIN    22  // Word Select (LRCLK)
@@ -15,24 +23,18 @@
 #define SAMPLING_FREQ 16000.0
 #define TARGET_FREQ   4000.0 // Frequenza da rilevare
 
-// da scrivere ancora commento
-double target_magnitude;
-
-//DA VEDERE POI CHE NUMERO METTERE
-const int invioSegnale = 4;
-
 // Calcolo del Bin FFT per 4000 Hz (Bin = Freq_target / (Fs / N))
 const int TARGET_BIN = round(TARGET_FREQ / (SAMPLING_FREQ / SAMPLES)); 
 
-// Soglia di Magnitudine: Regola questo valore per la tua taratura
-const int THRESHOLD_MAGNITUDE = 40000; 
+//DA VEDERE POI CHE NUMERO METTERE
+const int invioSegnale = 4;
 
 // --- Buffer e Oggetti FFT ---
 double vReal[SAMPLES];
 double vImag[SAMPLES];
 ArduinoFFT<double> FFT;
 
-/* Funzione per inizializzare l'I2S
+// Funzione per inizializzare l'I2S
 void i2s_install() {
   const i2s_config_t i2s_config = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX), // Master e Ricezione
@@ -45,7 +47,7 @@ void i2s_install() {
     .dma_buf_len = 64,
     .use_apll = false 
   };
-*/
+
   // ⚠️ CORREZIONE ORDINE CAMPI: data_out_num deve precedere data_in_num
   const i2s_pin_config_t pin_config = {
     .bck_io_num = I2S_BCK_PIN,
@@ -78,8 +80,8 @@ void i2s_read_samples(double *samples_buffer, size_t num_samples) {
 }
 
 void setup() {
-  Serial.begin(115200);
   pinMode(invioSegnale, OUTPUT); 
+  Serial.begin(115200);
   delay(1000);
   Serial.println("\n--- Avvio Rilevamento 4000 Hz con FFT ---");
   i2s_install();
@@ -87,14 +89,6 @@ void setup() {
   Serial.printf("FFT Configurato: Fs=%d Hz, N=%d campioni, Bin Target=%d (%.2f Hz)\n", SAMPLE_RATE, SAMPLES, TARGET_BIN, (float)TARGET_BIN * (SAMPLING_FREQ / SAMPLES));
   Serial.printf("Soglia di Rilevamento Magnitudine: %d\n", THRESHOLD_MAGNITUDE);
   Serial.println("------------------------------------");
-}
-
-bool sound_reveal() {
-  if (TARGET_BIN < SAMPLES / 2) {
-    target_magnitude = vReal[TARGET_BIN];
-    return (target_magnitude > THRESHOLD_MAGNITUDE);
-  }
-  return false;
 }
 
 void loop() {
@@ -109,10 +103,9 @@ void loop() {
   FFT.compute(vReal, vImag, SAMPLES, FFT_FORWARD);
   FFT.complexToMagnitude(vReal, vImag, SAMPLES); 
 
-  int
   // 3. Analisi e Stampa (Controllata dal Timer)
   if (TARGET_BIN < SAMPLES / 2) {
-    target_magnitude = vReal[TARGET_BIN]; 
+    double target_magnitude = vReal[TARGET_BIN]; 
 
     // Esegui la stampa solo se è trascorso l'intervallo specificato (100ms)
     if (TARGET_BIN < SAMPLES / 2) {
@@ -120,7 +113,7 @@ void loop() {
     if (target_magnitude > THRESHOLD_MAGNITUDE)
       {
         digitalWrite(invioSegnale, HIGH);
-        delay 2500;
+        delay (2500);
       }
   } 
   digitalWrite(invioSegnale, LOW);
