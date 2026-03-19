@@ -28,7 +28,7 @@ bool daly_rotate = false;
 #define MOTOR_SX_IN2 10
 #define RIGHT_LED_PIN 13
 #define FRONT_LEFT_LED_PIN A0
-#define LEFT_LED_PIN A1
+// #define LEFT_LED_PIN A1 //prob. da eliminare
 #define ON_RIGHT_WALL_DISTANCE 0.125
 #define KP 0.37
 #define KD 4
@@ -44,8 +44,9 @@ bool daly_rotate = false;
 
 #define LIGHT_SENSOR_2 3
 #define STATE_LIGHT_FOUND_LED_PIN 11
-#define A0 A0
+// #define A0 A0 //inutile
 #define LIGHT_SENSOR_1 12
+#define LIGHT_SENSOR_cavoGiallo A1
 #define IGNORE_TIME_AFTER_LIGHT_FOUND 1700
 
 struct Distance {
@@ -76,7 +77,7 @@ VL53L0X_RangingMeasurementData_t measure1;
 VL53L0X_RangingMeasurementData_t measure2;
 
 //suono
-const int ricezioneSegnaleSuono = 11;
+const int ricezioneSegnaleSuono = A2;
 
 /*
     Reset all sensors by setting all of their XSHUT pins low for delay(10), then set all XSHUT high to bring out of reset
@@ -184,6 +185,7 @@ void setup() {
   pinMode(FRONT_LEFT_LED_PIN, INPUT);
   pinMode(RIGHT_LED_PIN, INPUT);
   pinMode(LIGHT_SENSOR_1,INPUT);
+  pinMode(LIGHT_SENSOR_cavoGiallo,INPUT);
   pinMode(LIGHT_SENSOR_2,INPUT);
   pinMode(LEFT_LED_PIN, INPUT);  
  
@@ -233,9 +235,10 @@ void moveForward(){
 
 bool checkLightAndSound(){
   bool light_sensor_1 = digitalRead(LIGHT_SENSOR_1);
+  bool light_sensor_3 = digitalRead(LIGHT_SENSOR_cavoGiallo);
   bool light_sensor_2 = digitalRead(LIGHT_SENSOR_2);
   bool sound_sensor = digitalRead(ricezioneSegnaleSuono);
-  return light_sensor_1 || light_sensor_2 || sound_sensor;
+  return light_sensor_1 || light_sensor_2 || light_sensor_3 || sound_sensor;
 }
 
 bool checkFrontObstacle(){
@@ -302,7 +305,7 @@ short int frontDistance(){
   //invia un impulso di 10microsec su trigger
   digitalWrite( TRIGGER_PORT, HIGH );
   delayMicroseconds( 10 );
-  digitalWrite( ECHO_PORT, LOW );
+  digitalWrite( TRIGGER_PORT, LOW );
   long duration = pulseIn( ECHO_PORT, HIGH );
   long r = 0.034 * duration / 2;
   return r;
