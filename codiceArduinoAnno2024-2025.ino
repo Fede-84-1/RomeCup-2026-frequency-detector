@@ -187,7 +187,7 @@ void setup() {
   pinMode(LIGHT_SENSOR_1,INPUT);
   pinMode(LIGHT_SENSOR_cavoGiallo,INPUT);
   pinMode(LIGHT_SENSOR_2,INPUT);
-  pinMode(LEFT_LED_PIN, INPUT);  
+//  pinMode(LEFT_LED_PIN, INPUT);  
  
 }
 
@@ -246,8 +246,8 @@ bool checkFrontObstacle(){
     return true;
   bool front_left_obstacle = 1-digitalRead(FRONT_LEFT_LED_PIN);
   bool right_obstacle = 1-digitalRead(RIGHT_LED_PIN);
-  bool left_obstacle = 1-digitalRead(LEFT_LED_PIN);
-  return left_obstacle || right_obstacle || front_left_obstacle;
+//  bool left_obstacle = 1-digitalRead(LEFT_LED_PIN);
+  return right_obstacle || front_left_obstacle;//|| left_obstacle;
 }
 
 void rotateLeft(short int speed){
@@ -378,7 +378,7 @@ if (daly_rotate == true && time_number_light <= millis()){
 }
   Distance d = read_dual_sensors();
   short int error = d.rear-d.front;
-
+ 
 
   //if (!wallFound){
   //  searchForWall(d,error);
