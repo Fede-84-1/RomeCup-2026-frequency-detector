@@ -32,8 +32,8 @@ bool daly_rotate = false;
 #define ON_RIGHT_WALL_DISTANCE 0.125
 #define KP 0.37
 #define KD 4
-#define RIGHT_BASE_SPEED 165
-#define LEFT_BASE_SPEED RIGHT_BASE_SPEED-30
+#define RIGHT_BASE_SPEED 185 //vista da davanti
+#define LEFT_BASE_SPEED RIGHT_BASE_SPEED - 40//vista da davanti
 #define ROTATION_SPEED 150
 #define MAX_TURN_SPEED 150
 #define FRONT_CM_DISTANCE_OBSTACLE_AVOIDANCE_THRESHOLD 15
