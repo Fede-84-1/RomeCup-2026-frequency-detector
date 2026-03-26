@@ -113,6 +113,7 @@ void loop() {
     if (target_magnitude > THRESHOLD_MAGNITUDE)
       {
         digitalWrite(invioSegnale, HIGH);
+        serialprintln("segnale inviato")
         delay (2500);
       }
   } 
