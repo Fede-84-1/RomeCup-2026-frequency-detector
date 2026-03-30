@@ -76,8 +76,13 @@ Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
 VL53L0X_RangingMeasurementData_t measure1;
 VL53L0X_RangingMeasurementData_t measure2;
 
-//suono
+//suono e alcol pin
 const int ricezioneSegnaleSuono = A2;
+const int ricezioneSegnaleAlcol = A3;
+
+//perché le altre luci (suono e alcol) le accendo con l'esp 32
+bool light_sensor = false;
+
 
 /*
     Reset all sensors by setting all of their XSHUT pins low for delay(10), then set all XSHUT high to bring out of reset
@@ -162,6 +167,7 @@ void setup() {
   pinMode( ECHO_PORT, INPUT );
 
   pinMode( ricezioneSegnaleSuono, INPUT );
+  pinMode( ricezioneSegnaleAlcol, INPUT );
 
   Serial.println(F("Shutdown pins inited..."));
 
@@ -233,12 +239,11 @@ void moveForward(){
   Serial.println("");
 }
 
-bool checkLightAndSound(){
-  bool light_sensor_1 = digitalRead(LIGHT_SENSOR_1);
-  bool light_sensor_3 = digitalRead(LIGHT_SENSOR_cavoGiallo);
-  bool light_sensor_2 = digitalRead(LIGHT_SENSOR_2);
+bool checkAllSensors(){ //light sensor globale perché le altre luci (suono e alcol) le accendo con l'esp 32
+  light_sensor = digitalRead(LIGHT_SENSOR_1) || digitalRead(LIGHT_SENSOR_cavoGiallo) || digitalRead(LIGHT_SENSOR_2);
   bool sound_sensor = digitalRead(ricezioneSegnaleSuono);
-  return light_sensor_1 || light_sensor_2 || light_sensor_3 || sound_sensor;
+  bool alcol_sensor = digitalRead(ricezioneSegnaleAlcol);
+  return light_sensor || sound_sensor || alcol_sensor;
 }
 
 bool checkFrontObstacle(){
@@ -320,9 +325,9 @@ void searchForWall(Distance d, short int diff){
 }
 
 void greenLedThreeSecondsBlocking(){
-  digitalWrite(STATE_LIGHT_FOUND_LED_PIN,HIGH);
+  if (light_sensor) digitalWrite(STATE_LIGHT_FOUND_LED_PIN,HIGH); //basta questo perché le altre luci le accendo con l'esp 32
   delay(3000);
-  number_lights_seen = number_lights_seen + 1;
+  number_lights_seen = number_lights_seen + 1; //<-- da valutare se creare tre tipi di variabili per luce, suono e alcol o usare sempre la stessa
   digitalWrite(STATE_LIGHT_FOUND_LED_PIN,LOW);
 }
 
@@ -396,7 +401,7 @@ if (daly_rotate == true && time_number_light <= millis()){
     if (d.front<80) {
       emergencyFlagRotation = true;
     }
-    if(checkLightAndSound() && (millis()-lastTimeLightFound>IGNORE_TIME_AFTER_LIGHT_FOUND || first_light_not_found)){
+    if(checkAllSensors() && (millis()-lastTimeLightFound>IGNORE_TIME_AFTER_LIGHT_FOUND || first_light_not_found)){
       first_light_not_found = false;
       stopMotors(); // Ferma il robot
       greenLedThreeSecondsBlocking(); // Accendi verde per 3 secondi 
