@@ -110,13 +110,13 @@ void loop() {
     double target_magnitude = vReal[TARGET_BIN]; 
 
     // Esegui la stampa solo se è trascorso l'intervallo specificato (100ms)
-    if (TARGET_BIN < SAMPLES / 2) {
+    if (TARGET_BIN < SAMPLES / 2) { //da valutare se si può eliminare questo if, visto che c'è già subito prima
     target_magnitude = vReal[TARGET_BIN];
     if (target_magnitude > THRESHOLD_MAGNITUDE)
       {
         digitalWrite(invioSegnaleSuono, HIGH);
         digitalWrite(ledSuono, HIGH);
-        serialprintln("segnale inviato")
+        Serial.println("segnale inviato");
         delay (2500);
       }
   } 
