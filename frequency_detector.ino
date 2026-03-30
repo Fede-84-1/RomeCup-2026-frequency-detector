@@ -27,7 +27,8 @@ const unsigned long print_interval = 100;
 const int TARGET_BIN = round(TARGET_FREQ / (SAMPLING_FREQ / SAMPLES)); 
 
 //DA VEDERE POI CHE NUMERO METTERE
-const int invioSegnale = 4;
+const int invioSegnaleSuono = 4;
+const int ledSuono = 16;
 
 // --- Buffer e Oggetti FFT ---
 double vReal[SAMPLES];
@@ -80,7 +81,8 @@ void i2s_read_samples(double *samples_buffer, size_t num_samples) {
 }
 
 void setup() {
-  pinMode(invioSegnale, OUTPUT); 
+  pinMode(invioSegnaleSuono, OUTPUT); 
+  pinMode(ledSuono, OUTPUT); 
   Serial.begin(115200);
   delay(1000);
   Serial.println("\n--- Avvio Rilevamento 4000 Hz con FFT ---");
@@ -112,12 +114,14 @@ void loop() {
     target_magnitude = vReal[TARGET_BIN];
     if (target_magnitude > THRESHOLD_MAGNITUDE)
       {
-        digitalWrite(invioSegnale, HIGH);
+        digitalWrite(invioSegnaleSuono, HIGH);
+        digitalWrite(ledSuono, HIGH);
         serialprintln("segnale inviato")
         delay (2500);
       }
   } 
-  digitalWrite(invioSegnale, LOW);
+  digitalWrite(invioSegnaleSuono, LOW);
+  digitalWrite(ledSuono, LOW);
     
     // NOTA: Se devi fare un'azione veloce (es. accendere un LED), 
     // falla qui, fuori dal blocco del timer 'if', per la massima reattività!
