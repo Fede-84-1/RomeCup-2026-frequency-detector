@@ -254,23 +254,25 @@ bool checkFrontObstacle(){
 //  bool left_obstacle = 1-digitalRead(LEFT_LED_PIN);
   return right_obstacle || front_left_obstacle;//|| left_obstacle;
 }
-
-void rotateLeft(short int speed){
+//(RIGHT_BASE_SPEED - 40)
+void rotateRight(short int speed){
   // Ruota in senso orario
   analogWrite(MOTOR_DX_IN1, speed+18);
   analogWrite(MOTOR_DX_IN2, 0);
   analogWrite(MOTOR_SX_IN1, 0);
   analogWrite(MOTOR_SX_IN2, speed);
+  Serial.println("rotateRight");
 }
 
-void rotateRight(short int speed){
+void rotateLeft(short int speed){
   // Ruota in senso orario
   analogWrite(MOTOR_DX_IN1, 0);
   analogWrite(MOTOR_DX_IN2, speed+18);
   analogWrite(MOTOR_SX_IN1, speed);
   analogWrite(MOTOR_SX_IN2, 0);
+  Serial.println("rotateLeft");
 }
-void rotate90CW(){
+void rotate90CCW(){
   // Ruota in senso orario
   analogWrite(MOTOR_DX_IN1, 0);
   analogWrite(MOTOR_DX_IN2, 168);
@@ -279,7 +281,7 @@ void rotate90CW(){
   delay(600);
 }
 
-void rotate90CCW(){
+void rotate90CW(){
   // Ruota in senso antiorario
   analogWrite(MOTOR_DX_IN1, 168);
   analogWrite(MOTOR_DX_IN2, 0);
@@ -292,8 +294,8 @@ void turnRight(int motionTime){
   // Ruota in senso orario
   analogWrite(MOTOR_DX_IN1, 0);
   analogWrite(MOTOR_DX_IN2, 0);
-  analogWrite(MOTOR_SX_IN1, MAX_TURN_SPEED);
-  analogWrite(MOTOR_SX_IN2, 0);
+  analogWrite(MOTOR_SX_IN1, 0);
+  analogWrite(MOTOR_SX_IN2, MAX_TURN_SPEED);
   delay(motionTime);
 }
 void stopMotors(){
@@ -417,7 +419,7 @@ if (daly_rotate == true && time_number_light <= millis()){
       turnRight(300);
       lastState = 2;
     }else{
-      moveForwardWithFeedback(error, emergencyFlagFeedback, error-previousError);
+      moveForwardWithFeedback(-error, emergencyFlagFeedback, -(error-previousError));
       lastState = 3;
     }
     //delay(10);
