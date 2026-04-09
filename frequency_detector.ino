@@ -2,7 +2,7 @@
 #include <driver/i2s.h>
 
 // Soglia di Magnitudine, da regolare il giorno della gara
-const int THRESHOLD_MAGNITUDE = 40000; 
+const int THRESHOLD_MAGNITUDE = 35000; 
 
 // --- Configurazione Timer per Stampa Seriale ---
 unsigned long last_print_time = 0;
