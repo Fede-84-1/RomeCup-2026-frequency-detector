@@ -10,12 +10,12 @@
 
 int number_lights_seen = 0;
 
-int number_light_1 = 100;// da modificare quando inizia la gara
-int number_light_2 = 100;
-int number_light_3 = 100;
-int number_light_4 = 100;
-int number_light_5 = 100;
-int number_light_6 = 100;
+#define number_light_1 1// da modificare quando inizia la gara
+#define number_light_2 (number_light_1 + 1)
+#define number_light_3 (number_light_2 + 1)
+#define number_light_4 (number_light_3 + 1)
+#define number_light_5 (number_light_4 + 1)
+#define number_light_6 (number_light_5 + 1)
 
 long time_number_light;
 bool daly_rotate = false;
@@ -194,7 +194,15 @@ void setup() {
   pinMode(LIGHT_SENSOR_cavoGiallo,INPUT);
   pinMode(LIGHT_SENSOR_2,INPUT);
 //  pinMode(LEFT_LED_PIN, INPUT);  
- 
+
+
+  moveForward();
+  Serial.println(checkFrontObstacle(FRONT_CM_DISTANCE_OBSTACLE_AVOIDANCE_THRESHOLD + 10));
+  while(true) {
+    Serial.println("start");
+    Serial.println(checkFrontObstacle());
+    if (checkFrontObstacle()) break;
+  }
 }
 
  
@@ -232,9 +240,9 @@ void moveForward(){
   Serial.print(RIGHT_BASE_SPEED);
   Serial.print(" L_PWM:");
   Serial.println(LEFT_BASE_SPEED);
-  analogWrite(MOTOR_DX_IN1, RIGHT_BASE_SPEED + 10);
+  analogWrite(MOTOR_DX_IN1, RIGHT_BASE_SPEED);
   analogWrite(MOTOR_DX_IN2, 0);
-  analogWrite(MOTOR_SX_IN1, LEFT_BASE_SPEED);
+  analogWrite(MOTOR_SX_IN1, LEFT_BASE_SPEED + 11);
   analogWrite(MOTOR_SX_IN2, 0);
   Serial.println("");
 }
@@ -246,8 +254,8 @@ bool checkAllSensors(){ //light sensor globale perché le altre luci (suono e al
   return light_sensor || sound_sensor || alcol_sensor;
 }
 
-bool checkFrontObstacle(){
-  if (frontDistance()<FRONT_CM_DISTANCE_OBSTACLE_AVOIDANCE_THRESHOLD)
+bool checkFrontObstacle(short int front_cm_distance){
+  if (frontDistance()<front_cm_distance)
     return true;
   bool front_left_obstacle = 1-digitalRead(FRONT_LEFT_LED_PIN);
   bool right_obstacle = 1-digitalRead(RIGHT_LED_PIN);
@@ -278,7 +286,7 @@ void rotate90CCW(){
   analogWrite(MOTOR_DX_IN2, 168);
   analogWrite(MOTOR_SX_IN1, 140);
   analogWrite(MOTOR_SX_IN2, 0);
-  delay(600);
+  delay(720);
 }
 
 void rotate90CW(){
@@ -287,15 +295,15 @@ void rotate90CW(){
   analogWrite(MOTOR_DX_IN2, 0);
   analogWrite(MOTOR_SX_IN1, 0);
   analogWrite(MOTOR_SX_IN2, 140);
-  delay(600);
+  delay(720);
 }
 
 void turnRight(int motionTime){
   // Ruota in senso orario
-  analogWrite(MOTOR_DX_IN1, 0);
+  analogWrite(MOTOR_DX_IN1, MAX_TURN_SPEED);
   analogWrite(MOTOR_DX_IN2, 0);
   analogWrite(MOTOR_SX_IN1, 0);
-  analogWrite(MOTOR_SX_IN2, MAX_TURN_SPEED);
+  analogWrite(MOTOR_SX_IN2, 0);
   delay(motionTime);
 }
 void stopMotors(){
@@ -318,71 +326,56 @@ short int frontDistance(){
   return r;
 }
 
-void searchForWall(Distance d, short int diff){
+/*void searchForWall(Distance d, short int diff){
   rotateLeft(SEARCH_ROTATION_SPEED);
   if ((d.front<1000 && d.rear<1000) && (diff>-25 && diff<25)){
     rotate90CW();
     wallFound = true;
   }
-}
+}*/
 
 void greenLedThreeSecondsBlocking(){
   if (light_sensor) digitalWrite(STATE_LIGHT_FOUND_LED_PIN,HIGH); //basta questo perché le altre luci le accendo con l'esp 32
   delay(3000);
   number_lights_seen = number_lights_seen + 1; //<-- da valutare se creare tre tipi di variabili per luce, suono e alcol o usare sempre la stessa
   digitalWrite(STATE_LIGHT_FOUND_LED_PIN,LOW);
-}
-
-void loop() {
-  if (number_lights_seen == number_light_1){
+    if (number_lights_seen == number_light_1){
     rotate90CCW();
-    number_lights_seen = 0;
-    number_light_1 = 100;
-    number_light_2 = 5;// Da modificare
 //time_number_light = millis() + 1700; //se levo quegli // devo aggiungerli al rotate
 //daly_rotate = true;
   }
   if (number_lights_seen == number_light_2){
     rotate90CCW();
-    number_lights_seen = 0;
-    number_light_2 = 100;
-    number_light_3 = 1;// Da modificare
-//time_number_light = millis() + 6000;
+//time_number_light = millis() + 1700; //se levo quegli // devo aggiungerli al rotate
 //daly_rotate = true;
-
   }
   if (number_lights_seen == number_light_3){
     //rotate90CCW();
-    number_lights_seen = 0;
-    number_light_3 = 100;
-    number_light_4 = 2;// Da modificare
-time_number_light = millis() + 6000;
+time_number_light = millis() + 1700;
 daly_rotate = true;
   }
   if (number_lights_seen == number_light_4){
     rotate90CCW();
-    number_lights_seen = 0;
-    number_light_4 = 100;
-    number_light_5 = 6;// Da modificare
-//time_number_light = millis() + 1700;
+//time_number_light = millis() + 1700; //se levo quegli // devo aggiungerli al rotate
 //daly_rotate = true;
   }
   if (number_lights_seen == number_light_5){
     rotate90CCW();
-    number_lights_seen = 0;
-    number_light_5 = 100;
-    number_light_6 = 6;// Da modificare
-//time_number_light = millis() + 1700;
+//time_number_light = millis() + 1700; //se levo quegli // devo aggiungerli al rotate
 //daly_rotate = true;
   }
   if (number_lights_seen == number_light_6){
-    rotate90CCW();
+     rotate90CCW();
+//time_number_light = millis() + 1700; //se levo quegli // devo aggiungerli al rotate
 //daly_rotate = true;
   }
 if (daly_rotate == true && time_number_light <= millis()){
     rotate90CCW();
     daly_rotate = false;
 }
+}
+
+void loop() {
   Distance d = read_dual_sensors();
   short int error = d.rear-d.front;
  
@@ -394,7 +387,7 @@ if (daly_rotate == true && time_number_light <= millis()){
     bool emergencyFlagFeedback = false;
     bool emergencyFlagRotation = false;
 
-    bool frontObstacle = checkFrontObstacle();
+    bool frontObstacle = checkFrontObstacle(FRONT_CM_DISTANCE_OBSTACLE_AVOIDANCE_THRESHOLD);
     //Serial.print(" FRONT_OBSTACLE ");
     //Serial.print(frontObstacle);
     if (d.front<85 || (d.front<90 && d.rear<100)){
@@ -406,7 +399,8 @@ if (daly_rotate == true && time_number_light <= millis()){
     if(checkAllSensors() && (millis()-lastTimeLightFound>IGNORE_TIME_AFTER_LIGHT_FOUND || first_light_not_found)){
       first_light_not_found = false;
       stopMotors(); // Ferma il robot
-      greenLedThreeSecondsBlocking(); // Accendi verde per 3 secondi 
+      greenLedThreeSecondsBlocking(); // Accendi verde per 3 
+      lastState = 4; 
       lastTimeLightFound = millis();
     } else if (frontObstacle || emergencyFlagRotation){
       rotateLeft(ROTATION_SPEED);
@@ -416,12 +410,13 @@ if (daly_rotate == true && time_number_light <= millis()){
       else moveForward();
       lastState = 1;
     }else if (d.front>200 && d.rear<150){
-      turnRight(300);
+      turnRight(500);
       lastState = 2;
     }else{
       moveForwardWithFeedback(-error, emergencyFlagFeedback, -(error-previousError));
       lastState = 3;
     }
+  Serial.println(lastState);
     //delay(10);
     previousError = error;
   //}
