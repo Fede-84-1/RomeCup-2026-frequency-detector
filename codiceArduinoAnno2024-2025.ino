@@ -200,8 +200,8 @@ void setup() {
   Serial.println(checkFrontObstacle(FRONT_CM_DISTANCE_OBSTACLE_AVOIDANCE_THRESHOLD + 10));
   while(true) {
     Serial.println("start");
-    Serial.println(checkFrontObstacle());
-    if (checkFrontObstacle()) break;
+    Serial.println(checkFrontObstacle(FRONT_CM_DISTANCE_OBSTACLE_AVOIDANCE_THRESHOLD + 10));
+    if (checkFrontObstacle(FRONT_CM_DISTANCE_OBSTACLE_AVOIDANCE_THRESHOLD + 10)) break;
   }
 }
 
@@ -242,7 +242,7 @@ void moveForward(){
   Serial.println(LEFT_BASE_SPEED);
   analogWrite(MOTOR_DX_IN1, RIGHT_BASE_SPEED);
   analogWrite(MOTOR_DX_IN2, 0);
-  analogWrite(MOTOR_SX_IN1, LEFT_BASE_SPEED + 11);
+  analogWrite(MOTOR_SX_IN1, LEFT_BASE_SPEED + 12);
   analogWrite(MOTOR_SX_IN2, 0);
   Serial.println("");
 }
